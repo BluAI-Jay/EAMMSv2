@@ -77,7 +77,7 @@ const AttendanceRegularization = () => {
     };
 
     return (
-        <div className="w-full h-full flex justify-center items-center">
+        <div className="w-full h-full flex justify-center items-center p-8">
             <div className="w-full max-w-6xl xl:w-fit 2xl:w-full bg-white rounded-lg shadow-lg">
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-2 rounded-t-lg text-white" style={{ background: 'linear-gradient(225deg, rgb(45, 116, 163), rgb(0, 66, 104))' }}>

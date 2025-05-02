@@ -28,7 +28,7 @@ const Announcements = () => {
 
   return (
 
-    <div className="relative w-[50vw] h-[37vh] shadow-lg rounded-xl">
+    <div className="relative w-[50vw] md:w-[40vw] lg:w-[50vw] h-[37vh] shadow-lg rounded-xl">
     {/* Overlapping white box */}
     <div className="absolute inset-0 rounded-lg shadow-md overflow-hidden bg-white z-10">
       <div

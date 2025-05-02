@@ -28,7 +28,7 @@ const EmployeeInfo = () => {
 
   return (
 
-    <div className="w-[27vw] h-[37vh] shadow-lg rounded-xl relative">
+    <div className="w-[27vw] md:w-[37vw] lg:w-[27vw] h-[37vh] shadow-lg rounded-xl relative">
   <div className="absolute inset-0">
     <div className="w-full h-full rounded-lg shadow-md bg-white overflow-hidden flex flex-col">
       <div

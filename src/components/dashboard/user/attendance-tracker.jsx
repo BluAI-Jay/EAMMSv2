@@ -105,7 +105,7 @@ const AttendanceTracker = () => {
   };
 
   return (
-    <div className="w-[90vw] md:w-[70vw] lg:w-[50vw] h-auto md:h-[37vh] shadow-lg rounded-xl relative mx-auto">
+    <div className="w-[90vw] md:w-[40vw] lg:w-[50vw] h-auto md:h-[37vh] shadow-lg rounded-xl relative mx-auto">
       <div className="absolute inset-0 rounded-lg shadow-md bg-white overflow-hidden flex flex-col">
         {/* Fixed header */}
         <div
@@ -121,9 +121,9 @@ const AttendanceTracker = () => {
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto">
-          <div className="px-4 py-3 flex flex-col md:flex-row md:items-start md:justify-between gap-5">
+          <div className="px-4 py-3 flex flex-col md:flex-col lg:flex-row md:items-start md:justify-between gap-5">
             {/* Calendar */}
-            <div className="w-full md:w-1/3 lg:w-1/3 rounded-lg shadow-md p-3 bg-gray-100">
+            <div className="w-full md:w-full lg:w-1/3 rounded-lg shadow-md p-3 bg-gray-100">
               <div className="flex justify-between items-center mb-2">
                 <button
                   className="bg-gray-200 px-2 py-1 rounded text-xs md:text-sm"
@@ -148,12 +148,12 @@ const AttendanceTracker = () => {
             </div>
 
             {/* Clock */}
-            <div className="w-full md:w-1/3 lg:w-2/5 rounded-lg p-3 flex justify-center">
+            <div className="w-full md:w-full lg:w-2/5 rounded-lg p-3 flex justify-center">
               <Clock />
             </div>
 
             {/* Attendance Info */}
-            <div className="w-full md:w-1/3 lg:w-1/4 space-y-4">
+            <div className="w-full md:w-full lg:w-1/4 space-y-4">
               <div className="bg-gray-50 rounded-lg shadow p-3 text-center">
                 <h6 className="text-xs md:text-sm font-semibold mb-1">
                   Working Hours

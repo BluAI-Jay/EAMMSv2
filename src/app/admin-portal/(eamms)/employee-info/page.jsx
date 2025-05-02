@@ -33,7 +33,7 @@ const EmployeeSearch = () => {
   };
 
   return (
-    <div className="w-full h-full flex justify-center items-center">
+    <div className="w-full h-full flex justify-center items-center p-8">
       <div className="w-full max-h-[50vh] max-w-6xl xl:w-4xl xl:h-fit 2xl:w-full rounded-lg">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="flex items-center gap-2 text-white px-4 py-3"style={{

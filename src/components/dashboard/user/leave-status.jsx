@@ -28,7 +28,7 @@ const LeaveStatus = () => {
   }, []);
 
   return (
-    <div className="w-[27vw] h-[37vh] shadow-lg rounded-xl bg-white flex flex-col">
+    <div className="w-[27vw] md:w-[37vw] lg:w-[27vw] h-[37vh] shadow-lg rounded-xl bg-white flex flex-col">
   <div className="rounded-lg overflow-hidden flex flex-col flex-1">
     <div
       className="px-4 py-3 text-white text-lg font-semibold flex items-center gap-1.5"

@@ -7,6 +7,7 @@ import { BsPersonCheck, BsBoxArrowInRight, BsClockHistory, BsCalendar3 } from "r
 const AttendanceSystem = () => {
   const [loading, setLoading] = useState(false);
   const [attendanceData, setAttendanceData] = useState(null);
+  const [loadingLocations, setLoadingLocations] = useState(true);
   const [time, setTime] = useState(""); // Initialize as empty string
   const [date, setDate] = useState(""); // Initialize as empty string
   const [swipeStatus, setSwipeStatus] = useState({ has_swiped_in: false, has_swiped_out: false });
@@ -14,21 +15,15 @@ const AttendanceSystem = () => {
   const [location, setLocation] = useState(null);
   const [error, setError] = useState(null);
   const [locationPermissionGranted, setLocationPermissionGranted] = useState(false);
-
-  // Office locations with latitude and longitude
-  const officeLocations = [
-    { latitude: 30.65740, longitude: 76.68121 }, // Office 1
-    { latitude: 12.947131, longitude: 80.156789 }, // Office 2
-    // Add more offices as needed
-  ];
-
-  const maxDistance = 0.050; // in kilometers (50 meters)
+  const [officeLocations, setOfficeLocations] = useState([]);
+  const [maxDistance, setMaxDistance] = useState(null); // Default 50 meters
 
   useEffect(() => {
     console.log("Component mounted - initializing...");
     fetchAttendanceData();
     fetchSwipeStatus();
     fetchRecentSwipes();
+    fetchOfficeLocations();
     requestLocationPermission();
 
     // Set initial time/date immediately
@@ -43,6 +38,27 @@ const AttendanceSystem = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+
+  const fetchOfficeLocations = () => {
+    setLoadingLocations(true);
+    axios.get("https://eamms.bluai.ai/api/office-locations", {
+      headers: { Authorization: localStorage.getItem("token") }
+    })
+      .then(({ data }) => {
+        console.log("Office locations data:", data); // Check the actual response structure
+        // Make sure data.office_locations exists and is an array
+        const locations = Array.isArray(data.office_locations) ? data.office_locations : [];
+        setOfficeLocations(locations);
+        setMaxDistance(data.max_distance);
+        setLoadingLocations(false);
+      })
+      .catch(error => {
+        console.error("Failed to fetch office locations:", error);
+        setError("Failed to load office locations. Using default settings.");
+        setLoadingLocations(false);
+      });
+  };
 
   // Calculate distance between two coordinates in meters
   const getDistanceFromLatLonInMeters = (lat1, lon1, lat2, lon2) => {
@@ -110,63 +126,81 @@ const AttendanceSystem = () => {
         break;
     }
   };
-
   const checkLocation = (callback) => {
-    console.log("Checking location...");
     if (!navigator.geolocation) {
-      console.error("Geolocation not supported in checkLocation");
       setError("Geolocation is not supported by this browser.");
       return;
     }
-
+  
+    if (loadingLocations) {
+      setError("Office locations are still loading...");
+      return;
+    }
+  
+    if (!officeLocations || officeLocations.length === 0) {
+      setError("No office locations available. Please contact support.");
+      return;
+    }
+  
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const employeeLatitude = position.coords.latitude;
-        const employeeLongitude = position.coords.longitude;
-        console.log(`Employee location: ${employeeLatitude}, ${employeeLongitude}`);
-
-        let isWithinOffice = false;
+        const employeeLat = position.coords.latitude;
+        const employeeLon = position.coords.longitude;
+        console.log("Employee location:", employeeLat, employeeLon);
         console.log("Office locations:", officeLocations);
-
-        for (const office of officeLocations) {
+  
+        // Calculate distances to all ACTIVE office locations
+        const activeLocations = officeLocations.filter(loc => loc.is_active);
+        if (activeLocations.length === 0) {
+          setError("No active office locations available. Attendance marking is disabled.");
+          return;
+        }
+  
+        const distances = activeLocations.map((office) => {
+          console.log("Checking office location:", office.name, office.latitude, office.longitude);
           const distance = getDistanceFromLatLonInMeters(
             office.latitude,
             office.longitude,
-            employeeLatitude,
-            employeeLongitude
+            employeeLat,
+            employeeLon
           );
-
-          console.log(`Distance to office (${office.latitude}, ${office.longitude}): ${distance.toFixed(2)} meters`);
-          console.log(`Max allowed distance: ${maxDistance * 1000} meters`);
-
-          if (distance <= maxDistance * 1000) {
-            console.log("Within office radius!");
-            isWithinOffice = true;
-            break;
-          } else {
-            console.log("Outside office radius for this location");
-          }
-        }
-
-        if (isWithinOffice) {
-          console.log("Location verified - within office premises");
+          console.log(`Distance to ${office.name}: ${distance.toFixed(2)} meters`);
+          return { office, distance };
+        });
+  
+        // Find the nearest active office
+        const nearest = distances.reduce((prev, current) => 
+          (prev.distance < current.distance) ? prev : current
+        );
+  
+        console.log(`Nearest active office: ${nearest.office.name} (${nearest.distance.toFixed(2)} meters)`);
+  
+        // Use the office-specific max_distance instead of global maxDistance
+        const officeMaxDistance = nearest.office.max_distance || maxDistance;
+        
+        if (nearest.distance <= officeMaxDistance) {
+          console.log("Within allowed distance - proceeding with action");
           callback();
         } else {
-          console.log("Location verification failed - not within office premises");
-          setError("You are not in office premises.");
+          const errorMsg = `You are ${nearest.distance.toFixed(2)} meters away from ${nearest.office.name}. 
+                           Maximum allowed distance is ${officeMaxDistance} meters.`;
+          console.log(errorMsg);
+          setError(errorMsg);
         }
       },
       (error) => {
-        console.error("Error in checkLocation:", error);
+        console.error("Geolocation error:", error);
         handleLocationError(error);
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
+      { 
+        enableHighAccuracy: true, 
+        timeout: 10000, 
+        maximumAge: 0 
       }
     );
   };
+  
+  
 
   const handleSwipe = (type) => {
     console.log(`Attempting ${type}...`);
@@ -234,7 +268,7 @@ const AttendanceSystem = () => {
   };
 
   return (
-    <div className="w-full h-full flex justify-center items-center">
+    <div className="w-full h-full flex justify-center items-center p-12">
       <div className="w-full max-w-6xl xl:w-fit 2xl:w-full bg-white rounded-lg shadow-lg">
         <div className="text-white py-3 px-4 rounded-t-lg" style={{ background: 'linear-gradient(225deg,rgb(45, 116, 163),rgb(0, 66, 104))' }}>
           <h2 className="text-lg font-semibold flex gap-2 ">
@@ -246,7 +280,7 @@ const AttendanceSystem = () => {
           <p className="text-center text-red-500 mt-3">{error}</p>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-12">
 
           {/* Monthly Summary */}
           <div className="bg-white border border-gray-300 shadow-md rounded-lg min-h-[230px]">

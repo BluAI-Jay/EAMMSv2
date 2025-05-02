@@ -54,7 +54,7 @@ const LeaveApplication = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const approval_link = "http://localhost:3000";
+    const approval_link = "https://eammsv2.bluai.ai/admin-login";
 
     try {
       const response = await axios.post(

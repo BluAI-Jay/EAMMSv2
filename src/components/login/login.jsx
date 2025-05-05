@@ -98,7 +98,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className=" bg-transparent w-[90vw] sm:w-[470] max-h-[670] rounded-xl border border-gray-200 shadow-lg p-12">
+        <div className=" bg-transparent w-[90vw] sm:w-[470] max-h-[690] rounded-xl border border-gray-200 shadow-lg p-12">
             <h1 className="flex justify-center mb-4">
                 <img src="/company_logo.png" alt="BluAI Logo" className="h-16" />
             </h1>

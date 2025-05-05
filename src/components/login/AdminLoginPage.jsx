@@ -76,7 +76,7 @@ export default function AdminLoginPage() {
         }
 
         try {
-            const response = await axios.post("https://eamms.bluai.ai/api/admin-login", {
+            const response = await axios.post("https://eamms.bluai.ai/api/admin-login1", {
                 username: username,
                 password: password,
             });
@@ -100,7 +100,7 @@ export default function AdminLoginPage() {
         <h1 className="flex justify-center mb-4">
             <img src="/company_logo.png" alt="BluAI Logo" className="h-16" />
         </h1>
-    
+        <h2 className="text-center text-xl font-bold mb-6 text-gray-700">Admin Login</h2>
         <form onSubmit={handleLogin} className="max-h-[90%] flex flex-col gap-5">
             {/* Login Error */}
             {loginError && (

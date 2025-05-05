@@ -135,7 +135,7 @@ const OfficeLocationsAdmin = () => {
 
   return (
     <div className="w-full h-full flex justify-center items-center p-4">
-       <div className="w-[68vw] max-h-[68vh] xl:h-[60vh] 2xl:max-h-[68vh] max-w-6xl rounded-lg">
+      <div className="w-[68vw] max-h-[68vh] xl:h-[60vh] 2xl:max-h-[68vh] max-w-6xl rounded-lg">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
           {/* Header */}
           <div className="flex items-center gap-2 text-white px-4 py-3" style={{
